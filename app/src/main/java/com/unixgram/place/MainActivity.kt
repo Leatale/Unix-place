@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.CookieManager
-import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
@@ -31,7 +30,6 @@ class MainActivity : Activity() {
         webView.settings.domStorageEnabled = true
         webView.settings.loadWithOverviewMode = true
         webView.settings.useWideViewPort = true
-        webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         webView.settings.userAgentString =
             "Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36"
 
@@ -67,8 +65,12 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         if (wasInBackground) {
-            webView.clearCache(true)
-            webView.loadUrl("https://place.unixgram.com")
+            webView.evaluateJavascript(
+                "document.dispatchEvent(new Event('visibilitychange'));" +
+                "window.dispatchEvent(new Event('focus'));" +
+                "window.dispatchEvent(new Event('pageshow'));",
+                null
+            )
             wasInBackground = false
         }
     }
