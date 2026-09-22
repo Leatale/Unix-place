@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
@@ -19,6 +20,10 @@ class MainActivity : Activity() {
 
         webView = WebView(this)
         setContentView(webView)
+
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.setAcceptCookie(true)
+        cookieManager.setAcceptThirdPartyCookies(webView, true)
 
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
@@ -34,7 +39,7 @@ class MainActivity : Activity() {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                         startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
-                        // Приложение для этой ссылки не установлено — игнорируем
+                        // Приложение для этой ссылки не установлено
                     }
                     true
                 } else {
@@ -43,7 +48,16 @@ class MainActivity : Activity() {
             }
         }
 
-        webView.loadUrl("https://place.unixgram.com")
+        if (savedInstanceState != null) {
+            webView.restoreState(savedInstanceState)
+        } else {
+            webView.loadUrl("https://place.unixgram.com")
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        webView.saveState(outState)
     }
 
     @Deprecated("Deprecated in Java")
