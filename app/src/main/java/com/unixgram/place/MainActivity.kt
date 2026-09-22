@@ -13,6 +13,7 @@ import android.webkit.WebViewClient
 class MainActivity : Activity() {
 
     private lateinit var webView: WebView
+    private var wasInBackground = false
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +53,19 @@ class MainActivity : Activity() {
             webView.restoreState(savedInstanceState)
         } else {
             webView.loadUrl("https://place.unixgram.com")
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        wasInBackground = true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (wasInBackground) {
+            webView.reload()
+            wasInBackground = false
         }
     }
 
